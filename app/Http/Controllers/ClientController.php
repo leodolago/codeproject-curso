@@ -20,7 +20,6 @@ class ClientController extends Controller
         return \CodeProject\Client::all();
     }
 
-
     /**
      * Store a newly created resource in storage.
      *
@@ -51,10 +50,14 @@ class ClientController extends Controller
      */
 
     public function update(Request $request, $id)
+
     {
 
-        return Client::find($id)->updated($request->all());
+        $client = Client::find($id); //consulta o client pelo id
 
+        $client->update($request->all(), $id); //atualiza os dados, e retorna um valor booleano
+
+        return $client; //retorna os dados em JSON
     }
 
     /**
@@ -63,17 +66,18 @@ class ClientController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
+
     public function destroy($id)
     {
-        try
-        {
-            Client::find($id)->delete();
-        return response()->json('ok apagado');
-    }
-        catch (\Exception $e)
-        {
-            return response()->json('Não existe');
-    }
+        $client = Client::find($id);
+
+        if (!$client) {
+            return ('Client não encontrado');
+        } else {
+            $client->delete();
+            return ('Client deletado');
+        }
 
     }
+
 }
