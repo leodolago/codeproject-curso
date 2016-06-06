@@ -11,7 +11,6 @@ namespace CodeProject\Services;
 
 use CodeProject\Repositories\ProjectRepository;
 use CodeProject\Validators\ProjectValidator;
-use Illuminate\Contracts\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Prettus\Validator\Exceptions\ValidatorException;
 
@@ -56,7 +55,7 @@ class ProjectService
 
             return $this->repository->update($data, $id);
 
-            return  $this->repository->find($id);
+            return $this->repository->find($id);
 
         } catch (ValidatorException $e) {
             return[
@@ -71,11 +70,11 @@ class ProjectService
     {
         try {
             $this->repository->find($id)->delete();
-            return ('cliente deletado');
+            return ('Projeto deletado');
         } catch (ModelNotFoundException $e) {
 
             return [
-                'error' => 'Cliente não encontrado.'
+                'error' => 'Projeto não encontrado.'
             ];
         }
     }
@@ -84,12 +83,12 @@ class ProjectService
     {
         try {
             
-            $this->repository->find($id);
+            return $this->repository->with(['client', 'owner'])->find($id);
             
         } catch (ModelNotFoundException $e) {
 
             return [
-                'error' => 'Cliente não encontrado.'
+                'error' => 'Projeto não encontrado.'
             ];
         }
     }
