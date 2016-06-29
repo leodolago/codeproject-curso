@@ -9,10 +9,10 @@
 namespace CodeProject\Services;
 
 
-use CodeProject\Entities\Project;
 use CodeProject\Repositories\ClientRepository;
 use CodeProject\Validators\ClientValidator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use \Illuminate\Database\QueryException;
 use Prettus\Validator\Exceptions\ValidatorException;
 
 class ClientService
@@ -41,9 +41,7 @@ class ClientService
 
         } catch (ValidatorException $e) {
             return [
-                'error' => true,
-                'message' => $e->getMessageBag()
-            ];
+                'error' => true, 'Verifique os campos obrigatorios'];
         }
 
     }
@@ -72,6 +70,22 @@ class ClientService
 
     public function delete($id)
     {
+
+        try {
+            $this->repository->find($id)->delete();
+            return ['success' => true, 'Cliente deletado!'];
+        } catch (QueryException $e) {
+            return ['error' => true, 'Cliente não pode ser apagado.Existe um ou mais projetos vinculados.'];
+        } catch (ModelNotFoundException $e) {
+            return ['error' => true, 'Cliente não existe.'];
+        } catch (\Exception $e) {
+            return ['error' => true, 'Ocorreu algum erro ao excluir o projeto.'];
+        }
+
+    }
+
+        /**
+
         try {
          Project::where('client_id', '=', $id)->delete();
            $this->repository->find($id)->delete();
@@ -80,7 +94,7 @@ class ClientService
             return [
                 'error' => 'Cliente não existe.'];
         }
-    }
+    } */
 
     /**
      * { try {
@@ -98,7 +112,6 @@ class ClientService
      * return [
      * 'error' => 'Delete os projetos desse cliente primeiro'];
      * }} */
-
 
     public function find($id)
     {
