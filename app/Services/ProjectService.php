@@ -84,8 +84,6 @@ class ProjectService
         try {
             $this->repository->find($id)->delete();
             return ['success'=>true, 'Projeto deletado!'];
-        } catch (QueryException $e) {
-            return ['error'=>true, 'Projeto não pode ser apagado.Existe um ou mais clientes vinculados.'];
         } catch (ModelNotFoundException $e) {
             return ['error'=>true, 'Projeto não existe.'];
         } catch (\Exception $e) {
