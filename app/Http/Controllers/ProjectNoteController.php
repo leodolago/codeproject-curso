@@ -2,23 +2,23 @@
 
 namespace CodeProject\Http\Controllers;
 
-use CodeProject\Repositories\ProjectRepository;
-use CodeProject\Services\ProjectService;
+use CodeProject\Repositories\ProjectNoteRepository;
+use CodeProject\Services\ProjectNoteService;
 use Illuminate\Http\Request;
 
-class ProjectController extends Controller
+class ProjectNoteController extends Controller
 {
     /**
-     * @var ProjectRepository
+     * @var ProjectNoteRepositoryRepository
      */
 
    private $repository;
     /**
-     * @var ProjectService
+     * @var ProjectNoteService
      */
     private $service;
 
-    public function __construct(ProjectRepository $repository, ProjectService $service)
+    public function __construct(ProjectNoteRepository $repository, ProjectNoteService $service)
     {
             $this->repository = $repository;
             $this->service = $service;
@@ -29,9 +29,9 @@ class ProjectController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($id)
     {
-       return $this->repository->with(['client', 'owner'])->all();
+       return $this->repository->findWhere(['project_id' => $id]);
       //  return $this->repository->all();
     }
 
@@ -53,9 +53,9 @@ class ProjectController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, $noteId)
     {
-        return $this->service->find($id);
+        return $this->repository->findWhere(['project_id' => $id,'id' => $noteId]);
     }
 
     /**
@@ -65,10 +65,10 @@ class ProjectController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, $noteId)
 
     {
-        return $this->service->update($request->all(), $id);
+        return $this->service->update($request->all(), $noteId);
        /**
         $client = $this->repository->find($id); //consulta o client pelo id
 
@@ -84,9 +84,9 @@ class ProjectController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function destroy($id )
+    public function destroy($id, $noteId )
     {
-        return $this->service->delete($id);
+        return $this->service->delete($noteId);
 
       /**  $client = $this->repository->find($id);
 
@@ -97,32 +97,6 @@ class ProjectController extends Controller
             return ('Client deletado');
         }
        */
-    }
+    } 
 
-    public function addMember($project_id, $member_id)
-    {
-        try {
-            return $this->service->addMember($project_id, $member_id);
-        } catch (ModelNotFoundException $e) {
-            return $this->erroMsgm('Projeto não encontrado.');
-        } catch (QueryException $e) {
-            return $this->erroMsgm('Membro não encontrado.');
-        } catch (\Exception $e) {
-            return $this->erroMsgm('Ocorreu um erro ao inserir o membro.');
-        }
-    }
-
-    public function removeMember($project_id, $member_id)
-    {
-        try {
-            return $this->service->removeMember($project_id, $member_id);
-        } catch (ModelNotFoundException $e) {
-            return $this->erroMsgm('Projeto não encontrado.');
-        } catch (QueryException $e) {
-            return $this->erroMsgm('Membro não encontrado.');
-        } catch (\Exception $e) {
-            return $this->erroMsgm('Ocorreu um erro ao remover o membro.');
-        }
-
-    }
-    }
+}

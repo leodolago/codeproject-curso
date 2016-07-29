@@ -8,23 +8,24 @@
 
 namespace CodeProject\Services;
 
-use CodeProject\Repositories\ProjectRepository;
-use CodeProject\Validators\ProjectValidator;
+
+use CodeProject\Repositories\ProjectNoteRepository;
+use CodeProject\Validators\ProjectNoteValidator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Prettus\Validator\Exceptions\ValidatorException;
 
-class ProjectService
+class ProjectNoteService
 {
     /**
-     * @var ProjectRepository
+     * @var ProjectNoteRepository
      */
     protected $repository;
     /**
-     * @var ProjectValidator
+     * @var ProjectNoteValidator
      */
     protected $validator;
 
-    public function __construct(ProjectRepository $repository, ProjectValidator $validator )
+    public function __construct(ProjectNoteRepository $repository, ProjectNoteValidator $validator )
     {
         $this->repository = $repository;
         $this->validator = $validator;
@@ -93,7 +94,7 @@ class ProjectService
     {
         try {
             
-            return $this->repository->with(['client', 'owner',])->find($id);
+            return $this->repository->with(['client', 'owner'])->find($id);
             
         } catch (ModelNotFoundException $e) {
 
@@ -101,31 +102,4 @@ class ProjectService
                 'error'=>true, 'Projeto não existe.'];
         }
     }
-
-    public function addMember($project_id, $member_id)
-    {
-        $project = $this->repository->find($project_id);
-        if(!$this->isMember($project_id, $member_id)){
-            $project->members()->attach($member_id);
-        }
-        return $project->members()->get();
-    }
-
-    public function isMember($project_id, $member_id)
-    {
-        $project = $this->repository->find($project_id)->members()->find(['member_id' => $member_id]);
-        if (count($project)) {
-            return true;
-        }
-        return false;
-
-    }
-
-    public function removeMember($project_id, $member_id)
-    {
-        $project = $this->repository->find($project_id);
-        $project->members()->detach($member_id);
-        return $project->members()->get();
-    }
-
-    }
+}
